@@ -1,0 +1,19 @@
+#!/usr/bin/expect
+
+set timeout -1
+
+## Lists the software that needs to be installed
+set software " "
+
+spawn arch-chroot out/ubuntu_base
+
+expect ":/# "
+send "apt update\n"
+
+expect ":/# "
+send "apt install -y $software \n"
+
+expect ":/# "
+send "exit\n"
+
+interact

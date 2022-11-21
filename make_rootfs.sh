@@ -70,8 +70,9 @@ ROOTFS=$OUTPUT/${ROOTFS_NAME}.${ROOTFS_TYPE}
 ROOTFS_TARGET_TYPE=$OUTPUT/${ROOTFS_NAME}_${TARGET}.${ROOTFS_TYPE}
 UBUNTU_BASE_PACKAGE=`basename $URL`
 
-color_echo "Download ubuntu base package"
 if [ ! -e $DOWNLOAD/$UBUNTU_BASE_PACKAGE ]; then
+	color_echo "Download ubuntu base package"
+
 	wget $URL -P $DOWNLOAD
 fi
 
@@ -100,7 +101,7 @@ if [ $interval_timestamp -lt 180 ]; then ## 3 minutes
 fi
 
 color_echo "Install software by overlay"
-cp overlay/* $UBUNTU_BASE_DIR
+cp -r overlay/* $UBUNTU_BASE_DIR
 
 color_echo "Make root file system image"
 ROOTFS_ZISE_MB=`sudo du -s -BM $UBUNTU_BASE_DIR | awk '{print $1}' | tr -cd "[0-9]"`

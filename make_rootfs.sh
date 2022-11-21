@@ -32,7 +32,7 @@ if [[ $1 = "riscv64" && ! `which qemu-riscv64-static` ]]; then
 fi
 
 color_echo "Source default configure"
-if [ ! -f .config ]; then
+if [ ! -f $CONFIG ]; then
 	echo "TARGET=" > $CONFIG
 fi
 

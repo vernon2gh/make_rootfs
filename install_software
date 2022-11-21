@@ -5,7 +5,7 @@ set timeout -1
 ## Lists the software that needs to be installed
 set software " "
 
-spawn arch-chroot out/ubuntu_base
+spawn arch-chroot [lindex $argv 0]
 
 expect ":/# "
 send "apt update\n"

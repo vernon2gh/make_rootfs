@@ -96,7 +96,7 @@ file_timestamp=`stat -c %Y ./install_software`
 interval_timestamp=$[$now_timestamp - $file_timestamp]
 
 if [ $interval_timestamp -lt 180 ]; then ## 3 minutes
-	sudo /usr/bin/expect ./install_software
+	sudo /usr/bin/expect ./install_software $UBUNTU_BASE_DIR
 fi
 
 color_echo "Install software by overlay"

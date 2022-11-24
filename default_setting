@@ -1,0 +1,48 @@
+#!/usr/bin/expect
+
+set timeout -1
+
+spawn arch-chroot [lindex $argv 0]
+
+expect ":/# "
+send "apt update\n"
+
+## Install language package
+expect ":/# "
+send "apt install -y language-pack-en language-pack-zh-hans \n"
+
+## Insatll systemd package
+expect ":/# "
+send "mv /run/systemd/resolve/stub-resolv.conf /run/systemd/resolve/stub-resolv.conf.back\n"
+
+expect ":/# "
+send "apt install -y systemd-sysv \n"
+
+expect ":/# "
+send "sed -i \"s/^BindsTo=dev-%i.device/BindsTo=dev-%i/\" /lib/systemd/system/serial-getty@.service\n"
+
+expect ":/# "
+send "mv /run/systemd/resolve/stub-resolv.conf.back /run/systemd/resolve/stub-resolv.conf\n"
+
+## Modify password of root user
+expect ":/# "
+send "passwd root\n"
+
+expect "New password: "
+send "root\n"
+
+expect "Retype new password: "
+send "root\n"
+
+## Modify host name
+expect ":/# "
+send "echo \"test-pc\" > /etc/hostname\n"
+
+## Set terminal color
+expect ":/# "
+send "echo \"export TERM=xterm-256color\" > /root/.bash_aliases\n"
+
+expect ":/# "
+send "exit\n"
+
+interact

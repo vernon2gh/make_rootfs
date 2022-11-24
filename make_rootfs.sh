@@ -70,6 +70,7 @@ if [ ! -e $ROOTFS_TARGET_TYPE ]; then
 
 	sudo tar -zxvf $DOWNLOAD/$UBUNTU_BASE_PACKAGE -C /mnt
 
+	sudo /usr/bin/expect ./default_setting /mnt
 	touch ./install_software
 else
 	sudo mount $ROOTFS_TARGET_TYPE /mnt

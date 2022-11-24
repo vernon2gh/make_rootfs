@@ -49,6 +49,14 @@ case $1 in
 		;;
 esac
 
+color_echo "Get mount location"
+if [ -z $2 ]; then
+	MOUNT_POINT=/mnt
+else
+	MOUNT_POINT=$2
+	mkdir -p $MOUNT_POINT
+fi
+
 ROOTFS=$OUTPUT/${ROOTFS_NAME}.${ROOTFS_TYPE}
 ROOTFS_TARGET_TYPE=$OUTPUT/${ROOTFS_NAME}_${TARGET}.${ROOTFS_TYPE}
 UBUNTU_BASE_PACKAGE=`basename $URL`
@@ -62,17 +70,17 @@ if [ ! -e $ROOTFS_TARGET_TYPE ]; then
 	color_echo "Make root file system image"
 	dd if=/dev/zero of=$ROOTFS_TARGET_TYPE bs=1G count=1
 	mkfs.$ROOTFS_TYPE $ROOTFS_TARGET_TYPE
-	sudo mount $ROOTFS_TARGET_TYPE /mnt
+	sudo mount $ROOTFS_TARGET_TYPE $MOUNT_POINT
 
 	color_echo "Decompression ubuntu base package"
-	sudo tar -zxvf $DOWNLOAD/$UBUNTU_BASE_PACKAGE -C /mnt
+	sudo tar -zxvf $DOWNLOAD/$UBUNTU_BASE_PACKAGE -C $MOUNT_POINT
 
 	color_echo "Default setting"
-	sudo /usr/bin/expect ./default_setting /mnt
+	sudo /usr/bin/expect ./default_setting $MOUNT_POINT
 
 	touch ./install_software
 else
-	sudo mount $ROOTFS_TARGET_TYPE /mnt
+	sudo mount $ROOTFS_TARGET_TYPE $MOUNT_POINT
 fi
 
 color_echo "Install software by apt"
@@ -81,12 +89,12 @@ file_timestamp=`stat -c %Y ./install_software`
 interval_timestamp=$[$now_timestamp - $file_timestamp]
 
 if [ $interval_timestamp -lt 180 ]; then ## 3 minutes
-	sudo /usr/bin/expect ./install_software /mnt
+	sudo /usr/bin/expect ./install_software $MOUNT_POINT
 fi
 
 color_echo "Install software by overlay"
-sudo cp -r overlay/* /mnt
+sudo cp -r overlay/* $MOUNT_POINT
 
-sudo umount /mnt
+sudo umount $MOUNT_POINT
 
 ln -sf `pwd`/$ROOTFS_TARGET_TYPE $ROOTFS

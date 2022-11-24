@@ -8,12 +8,14 @@ you to install the software via apt or overlay.
 ### Usage
 
 ```bash
-$ ./make_rootfs.sh [arch]
+$ ./make_rootfs.sh [arch] [mount_location]
 ```
 
 If the `[arch]` not specified, defalut target architecture is x86_64.
 
 Currently only x86_64, arm64 and riscv64 are supported.
+
+If the `[mount_location]` not specified, defalut mount location is `/mnt`.
 
 ### Install software
 

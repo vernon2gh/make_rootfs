@@ -55,22 +55,21 @@ UBUNTU_BASE_PACKAGE=`basename $URL`
 
 if [ ! -e $DOWNLOAD/$UBUNTU_BASE_PACKAGE ]; then
 	color_echo "Download ubuntu base package"
-
 	wget $URL -P $DOWNLOAD
 fi
 
 if [ ! -e $ROOTFS_TARGET_TYPE ]; then
 	color_echo "Make root file system image"
-
 	dd if=/dev/zero of=$ROOTFS_TARGET_TYPE bs=1G count=1
 	mkfs.$ROOTFS_TYPE $ROOTFS_TARGET_TYPE
 	sudo mount $ROOTFS_TARGET_TYPE /mnt
 
 	color_echo "Decompression ubuntu base package"
-
 	sudo tar -zxvf $DOWNLOAD/$UBUNTU_BASE_PACKAGE -C /mnt
 
+	color_echo "Default setting"
 	sudo /usr/bin/expect ./default_setting /mnt
+
 	touch ./install_software
 else
 	sudo mount $ROOTFS_TARGET_TYPE /mnt

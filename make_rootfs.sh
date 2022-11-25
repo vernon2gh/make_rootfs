@@ -2,11 +2,15 @@
 
 ROOTFS_NAME=rootfs
 ROOTFS_TYPE=ext4
-OUTPUT=out
+ROOTDIR=`dirname $0`
+OVERLAY=$ROOTDIR/overlay
+OUTPUT=$ROOTDIR/out
 DOWNLOAD=$OUTPUT/download
+DEFAULT_SETTING=$ROOTDIR/default_setting
+INSTALL_SOFTWARE=$ROOTDIR/install_software
 
-mkdir -p overlay $DOWNLOAD
-echo "This is overlay root directory." > overlay/README
+mkdir -p $OVERLAY $DOWNLOAD
+echo "This is overlay root directory." > $OVERLAY/README
 
 function color_echo() {
 	echo -e "\e[32m[make_rootfs] $1\e[0m"
@@ -76,24 +80,24 @@ if [ ! -e $ROOTFS_TARGET_TYPE ]; then
 	sudo tar -zxvf $DOWNLOAD/$UBUNTU_BASE_PACKAGE -C $MOUNT_POINT
 
 	color_echo "Default setting"
-	sudo /usr/bin/expect ./default_setting $MOUNT_POINT
+	sudo /usr/bin/expect $DEFAULT_SETTING $MOUNT_POINT
 
-	touch ./install_software
+	touch $INSTALL_SOFTWARE
 else
 	sudo mount $ROOTFS_TARGET_TYPE $MOUNT_POINT
 fi
 
 color_echo "Install software by apt"
 now_timestamp=`date +%s`
-file_timestamp=`stat -c %Y ./install_software`
+file_timestamp=`stat -c %Y $INSTALL_SOFTWARE`
 interval_timestamp=$[$now_timestamp - $file_timestamp]
 
 if [ $interval_timestamp -lt 180 ]; then ## 3 minutes
-	sudo /usr/bin/expect ./install_software $MOUNT_POINT
+	sudo /usr/bin/expect $INSTALL_SOFTWARE $MOUNT_POINT
 fi
 
 color_echo "Install software by overlay"
-sudo cp -r overlay/* $MOUNT_POINT
+sudo cp -r $OVERLAY/* $MOUNT_POINT
 
 sudo umount $MOUNT_POINT
 

@@ -26,3 +26,16 @@ in `install_software` file and rebuild the root file system.
 
 If you want to install software via overlay, put the relevant software in
 the `overlay/` directory and rebuild the root file system.
+
+### How do I boot root file system?
+
+```bash
+## x86_64
+$ qemu-system-x86_64 -hda rootfs.ext4 -kernel bzImage -append "root=/dev/sda console=ttyS0" -nographic
+
+## arm64
+$ qemu-system-aarch64 -M virt -cpu cortex-a57 -hda rootfs.ext4 -kernel Image -append "root=/dev/vda console=ttyAMA0" -nographic
+
+## riscv64
+$ qemu-system-riscv64 -M virt -drive file=rootfs.ext4,format=raw,id=hd0 -device virtio-blk-device,drive=hd0 -kernel Image -append "root=/dev/vda console=ttyS0" -nographic
+```

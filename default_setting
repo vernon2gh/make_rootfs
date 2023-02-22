@@ -24,6 +24,10 @@ send "sed -i \"s/^BindsTo=dev-%i.device/BindsTo=dev-%i/\" /lib/systemd/system/se
 expect ":/# "
 send "mv /run/systemd/resolve/stub-resolv.conf.back /run/systemd/resolve/stub-resolv.conf\n"
 
+## Insatll udev package
+expect ":/# "
+send "apt install -y udev \n"
+
 ## Modify password of root user
 expect ":/# "
 send "passwd root\n"
@@ -45,6 +49,19 @@ send "echo \"test-pc\" > /etc/hostname\n"
 ## Set terminal color
 expect ":/# "
 send "echo \"export TERM=xterm-256color\" > /root/.bash_aliases\n"
+
+## Enable network
+expect ":/# "
+send "systemctl enable systemd-networkd\n"
+
+expect ":/# "
+send "echo \"\[Match\]\" > /etc/systemd/network/eth.network\n"
+expect ":/# "
+send "echo \"Name=*\" >> /etc/systemd/network/eth.network\n"
+expect ":/# "
+send "echo \"\[Network\]\" >> /etc/systemd/network/eth.network\n"
+expect ":/# "
+send "echo \"DHCP=yes\" >> /etc/systemd/network/eth.network\n"
 
 expect ":/# "
 send "exit\n"

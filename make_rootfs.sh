@@ -81,6 +81,8 @@ if [ ! -e $ROOTFS_TARGET_TYPE ]; then
 
 	color_echo "Default setting"
 	sudo /usr/bin/expect $DEFAULT_SETTING $MOUNT_POINT
+	sudo rm -fr $MOUNT_POINT/etc/resolv.conf
+	sudo ln -s /run/systemd/resolve/resolv.conf $MOUNT_POINT/etc/resolv.conf
 
 	touch $INSTALL_SOFTWARE
 else

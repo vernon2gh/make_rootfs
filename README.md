@@ -19,13 +19,13 @@ If the `[mount_location]` not specified, defalut mount location is `/mnt`.
 
 ### Install software
 
-There are two ways to install the software, apt and overlay.
+There are three ways to install the software, as below:
 
-If you want to install the software through apt, enter the software name directly
-in `install_software` file and rebuild the root file system.
-
-If you want to install software via overlay, put the relevant software in
-the `overlay/` directory and rebuild the root file system.
+1. apt by native system, write the software name directly in `install_software` file
+   and rebuild the root file system.
+2. apt by virtual machine system, run `apt install xxx` command in runtime
+3. overlay, put the relevant software in the `overlay/` directory
+   and rebuild the root file system.
 
 ### How do I boot root file system?
 

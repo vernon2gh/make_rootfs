@@ -34,6 +34,10 @@ send "root\n"
 expect "Retype new password: "
 send "root\n"
 
+## Login root user automatically
+expect ":/# "
+send "sed -i \"s/-o '-p -- \\\\\\\\\\\\\\u'/-a root/\" /lib/systemd/system/serial-getty@.service\n"
+
 ## Modify host name
 expect ":/# "
 send "echo \"test-pc\" > /etc/hostname\n"

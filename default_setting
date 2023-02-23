@@ -1,69 +1,32 @@
-#!/usr/bin/expect
+#!/bin/bash
 
-set timeout -1
-
-spawn arch-chroot [lindex $argv 0]
-
-expect ":/# "
-send "apt update\n"
+apt update
 
 ## Install language package
-expect ":/# "
-send "apt install -y language-pack-en language-pack-zh-hans \n"
+apt install -y language-pack-en language-pack-zh-hans
 
 ## Insatll systemd package
-expect ":/# "
-send "mv /run/systemd/resolve/stub-resolv.conf /run/systemd/resolve/stub-resolv.conf.back\n"
-
-expect ":/# "
-send "apt install -y systemd-sysv \n"
-
-expect ":/# "
-send "sed -i \"s/^BindsTo=dev-%i.device/BindsTo=dev-%i/\" /lib/systemd/system/serial-getty@.service\n"
-
-expect ":/# "
-send "mv /run/systemd/resolve/stub-resolv.conf.back /run/systemd/resolve/stub-resolv.conf\n"
+mv /run/systemd/resolve/stub-resolv.conf /run/systemd/resolve/stub-resolv.conf.back
+apt install -y systemd-sysv
+sed -i "s/^BindsTo=dev-%i.device/BindsTo=dev-%i/" /lib/systemd/system/serial-getty@.service
+mv /run/systemd/resolve/stub-resolv.conf.back /run/systemd/resolve/stub-resolv.conf
 
 ## Insatll udev package
-expect ":/# "
-send "apt install -y udev \n"
-
-## Modify password of root user
-expect ":/# "
-send "passwd root\n"
-
-expect "New password: "
-send "root\n"
-
-expect "Retype new password: "
-send "root\n"
+apt install -y udev
 
 ## Login root user automatically
-expect ":/# "
-send "sed -i \"s/-o '-p -- \\\\\\\\\\\\\\u'/-a root/\" /lib/systemd/system/serial-getty@.service\n"
+sed -i "s/-o '-p -- \\\\\\\u'/-a root/" /lib/systemd/system/serial-getty@.service
 
 ## Modify host name
-expect ":/# "
-send "echo \"test-pc\" > /etc/hostname\n"
+echo "test-pc" > /etc/hostname
 
 ## Set terminal color
-expect ":/# "
-send "echo \"export TERM=xterm-256color\" > /root/.bash_aliases\n"
+echo "export TERM=xterm-256color" > /root/.bash_aliases
 
 ## Enable network
-expect ":/# "
-send "systemctl enable systemd-networkd\n"
+systemctl enable systemd-networkd
 
-expect ":/# "
-send "echo \"\[Match\]\" > /etc/systemd/network/eth.network\n"
-expect ":/# "
-send "echo \"Name=*\" >> /etc/systemd/network/eth.network\n"
-expect ":/# "
-send "echo \"\[Network\]\" >> /etc/systemd/network/eth.network\n"
-expect ":/# "
-send "echo \"DHCP=yes\" >> /etc/systemd/network/eth.network\n"
-
-expect ":/# "
-send "exit\n"
-
-interact
+echo "[Match]" > /etc/systemd/network/eth.network
+echo "Name=*" >> /etc/systemd/network/eth.network
+echo "[Network]" >> /etc/systemd/network/eth.network
+echo "DHCP=yes" >> /etc/systemd/network/eth.network

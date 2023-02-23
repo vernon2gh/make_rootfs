@@ -1,17 +1,7 @@
-#!/usr/bin/expect
-
-set timeout -1
+#!/bin/bash
 
 ## Lists the software that needs to be installed
-set software " "
-
-spawn arch-chroot [lindex $argv 0]
+SOFTWARE=" "
 
 ## Install software package
-expect ":/# "
-send "apt install -y $software \n"
-
-expect ":/# "
-send "exit\n"
-
-interact
+apt install -y $SOFTWARE

@@ -6,8 +6,8 @@ ROOTDIR=`dirname $0`
 OVERLAY=$ROOTDIR/overlay
 OUTPUT=$ROOTDIR/out
 DOWNLOAD=$OUTPUT/download
-DEFAULT_SETTING=$ROOTDIR/default_setting
-INSTALL_SOFTWARE=$ROOTDIR/install_software
+DEFAULT_SETTING=default_setting
+INSTALL_SOFTWARE=install_software
 
 mkdir -p $OVERLAY $DOWNLOAD
 echo "This is overlay root directory." > $OVERLAY/README
@@ -17,10 +17,6 @@ function color_echo() {
 }
 
 color_echo "Install dependencies"
-if [ ! `which expect` ]; then
-	sudo apt install expect
-fi
-
 if [ ! `which arch-chroot` ]; then
 	sudo apt install arch-install-scripts
 fi
@@ -80,22 +76,26 @@ if [ ! -e $ROOTFS_TARGET_TYPE ]; then
 	sudo tar -zxvf $DOWNLOAD/$UBUNTU_BASE_PACKAGE -C $MOUNT_POINT
 
 	color_echo "Default setting"
-	sudo /usr/bin/expect $DEFAULT_SETTING $MOUNT_POINT
+	sudo cp $ROOTDIR/$DEFAULT_SETTING $MOUNT_POINT
+	sudo arch-chroot $MOUNT_POINT /bin/bash /$DEFAULT_SETTING
+	sudo rm -fr $MOUNT_POINT/$DEFAULT_SETTING
 	sudo rm -fr $MOUNT_POINT/etc/resolv.conf
 	sudo ln -s /run/systemd/resolve/resolv.conf $MOUNT_POINT/etc/resolv.conf
 
-	touch $INSTALL_SOFTWARE
+	touch $ROOTDIR/$INSTALL_SOFTWARE
 else
 	sudo mount $ROOTFS_TARGET_TYPE $MOUNT_POINT
 fi
 
 color_echo "Install software by apt"
 now_timestamp=`date +%s`
-file_timestamp=`stat -c %Y $INSTALL_SOFTWARE`
+file_timestamp=`stat -c %Y $ROOTDIR/$INSTALL_SOFTWARE`
 interval_timestamp=$[$now_timestamp - $file_timestamp]
 
 if [ $interval_timestamp -lt 180 ]; then ## 3 minutes
-	sudo /usr/bin/expect $INSTALL_SOFTWARE $MOUNT_POINT
+	sudo cp $ROOTDIR/$INSTALL_SOFTWARE $MOUNT_POINT
+	sudo arch-chroot $MOUNT_POINT /bin/bash /$INSTALL_SOFTWARE
+	sudo rm -fr $MOUNT_POINT/$INSTALL_SOFTWARE
 fi
 
 color_echo "Install software by overlay"

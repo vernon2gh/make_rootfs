@@ -37,7 +37,7 @@ $ qemu-system-x86_64 -hda rootfs.ext4 -kernel bzImage -append "root=/dev/sda rw 
 $ qemu-system-aarch64 -M virt -cpu cortex-a57 -hda rootfs.ext4 -kernel Image -append "root=/dev/vda rw console=ttyAMA0" -nographic
 
 ## riscv64
-$ qemu-system-riscv64 -M virt -drive file=rootfs.ext4,format=raw,id=hd0 -device virtio-blk-device,drive=hd0 -kernel Image -append "root=/dev/vda rw console=ttyS0" -nographic
+$ qemu-system-riscv64 -M virt -drive file=rootfs.ext4,format=raw,id=hd0 -device virtio-blk-device,drive=hd0 -kernel Image -append "root=/dev/vda rw console=ttyS0" -netdev user,id=eth0 -device virtio-net-device,netdev=eth0 -nographic
 ```
 
 Optional parameters:

@@ -1,7 +1,0 @@
-#!/bin/bash
-
-## Lists the software that needs to be installed
-SOFTWARE=" "
-
-## Install software package
-apt install -y $SOFTWARE

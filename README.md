@@ -8,21 +8,26 @@ you to install the software via apt or overlay.
 ### Usage
 
 ```bash
-$ ./make_rootfs.sh [arch] [mount_location]
+$ ./make_rootfs.sh <options>
+
+Options:
+-a, --arch <x86_64/arm64/riscv64>  Specify the architecture
+-i, --install <software>           Specify the software to be install
+-m, --mount <directory>            Specifies the mount point for the root filesystem
+-h, --help                         Display this help
 ```
 
-If the `[arch]` not specified, defalut target architecture is x86_64.
+If the `--arch` not specified, defalut target architecture is x86_64.
 
 Currently only x86_64, arm64 and riscv64 are supported.
 
-If the `[mount_location]` not specified, defalut mount location is `/mnt`.
+If the `--mount` not specified, defalut mount point is `/mnt`.
 
 ### Install software
 
 There are three ways to install the software, as below:
 
-1. apt by native system, write the software name directly in `install_software` file
-   and rebuild the root file system.
+1. apt by native system, specify the software name in `--install` parameters
 2. apt by virtual machine system, run `apt install xxx` command in runtime
 3. overlay, put the relevant software in the `overlay/` directory
    and rebuild the root file system.

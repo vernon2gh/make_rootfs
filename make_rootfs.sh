@@ -121,7 +121,7 @@ else
 fi
 
 color_echo "Install software by apt"
-if [ ! -z $SOFTWARE ]; then
+if [ ! -z "$SOFTWARE" ]; then
 	sudo arch-chroot $MOUNT_POINT /bin/bash -c "apt install -y $SOFTWARE"
 fi
 

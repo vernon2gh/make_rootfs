@@ -11,10 +11,10 @@ you to install the software via apt or overlay.
 $ ./make_rootfs.sh <options>
 
 Options:
--a, --arch <x86_64/arm64/riscv64>  Specify the architecture
--i, --install <software>           Specify the software to be install
--m, --mount <directory>            Specifies the mount point for the root filesystem
--h, --help                         Display this help
+-a, --arch x86_64/arm64/riscv64  Specify the architecture
+-i, --install 'software'         Specify the software to be install
+-m, --mount directory            Specifies the mount point for the root filesystem
+-h, --help                       Display this help
 ```
 
 If the `--arch` not specified, defalut target architecture is x86_64.

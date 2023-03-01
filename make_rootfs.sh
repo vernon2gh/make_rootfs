@@ -1,7 +1,7 @@
 #!/bin/bash
 
 TARGET="x86_64"  ## default target
-SOFTWARE=" "     ##
+SOFTWARE=' '     ##
 MOUNT_POINT=/mnt ## default the mount point for the root filesystem
 
 ROOTFS_NAME=rootfs
@@ -47,10 +47,10 @@ do
 		echo "make a simple root file system"
 		echo ""
 		echo "Options:"
-		echo "-a, --arch <x86_64/arm64/riscv64>  Specify the architecture"
-		echo "-i, --install <software>           Specify the software to be install"
-		echo "-m, --mount <directory>            Specifies the mount point for the root filesystem"
-		echo "-h, --help                         Display this help"
+		echo "-a, --arch x86_64/arm64/riscv64  Specify the architecture"
+		echo "-i, --install 'software'         Specify the software to be install"
+		echo "-m, --mount directory            Specifies the mount point for the root filesystem"
+		echo "-h, --help                       Display this help"
 		exit
 		;;
 	--)

@@ -3,7 +3,7 @@
 apt update
 
 ## Install language package
-apt install -y language-pack-en language-pack-zh-hans
+apt install -y language-pack-en language-pack-zh-hans xterm
 
 ## Insatll systemd package
 mv /run/systemd/resolve/stub-resolv.conf /run/systemd/resolve/stub-resolv.conf.back
@@ -20,8 +20,9 @@ sed -i "s/-o '-p -- \\\\\\\u'/-a root/" /lib/systemd/system/serial-getty@.servic
 ## Modify host name
 echo "test-pc" > /etc/hostname
 
-## Set terminal color
-echo "export TERM=xterm-256color" > /root/.bash_aliases
+## Set terminal
+echo "resize >> /dev/null" >> /root/.bashrc
+echo "export TERM=xterm-256color" >> /root/.bash_aliases
 
 ## Enable network
 systemctl enable systemd-networkd

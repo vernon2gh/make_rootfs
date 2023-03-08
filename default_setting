@@ -20,9 +20,11 @@ sed -i "s/-o '-p -- \\\\\\\u'/-a root/" /lib/systemd/system/serial-getty@.servic
 ## Modify host name
 echo "test-pc" > /etc/hostname
 
-## Set terminal
-echo "resize >> /dev/null" >> /root/.bashrc
+## Set terminal color
 echo "export TERM=xterm-256color" >> /root/.bash_aliases
+
+## Resize the window before each prompt was displayed
+echo "PROMPT_COMMAND='eval \`/usr/bin/resize\`'" >> /root/.profile
 
 ## Enable network
 systemctl enable systemd-networkd

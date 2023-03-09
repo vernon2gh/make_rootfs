@@ -23,8 +23,8 @@ echo "test-pc" > /etc/hostname
 ## Set terminal color
 echo "export TERM=xterm-256color" >> /root/.bash_aliases
 
-## Resize the window before each prompt was displayed
-echo "PROMPT_COMMAND='eval \`/usr/bin/resize\`'" >> /root/.profile
+## Resize the window after each login bash
+echo "eval \`/usr/bin/resize\`" >> /root/.bashrc
 
 ## Enable network
 systemctl enable systemd-networkd

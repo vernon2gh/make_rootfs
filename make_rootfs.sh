@@ -99,7 +99,7 @@ fi
 
 if [ ! -e $ROOTFS_TARGET_TYPE ]; then
 	color_echo "Make root file system image"
-	dd if=/dev/zero of=$ROOTFS_TARGET_TYPE bs=1G count=1
+	dd if=/dev/zero of=$ROOTFS_TARGET_TYPE bs=1G count=10
 	mkfs.$ROOTFS_TYPE $ROOTFS_TARGET_TYPE
 	sudo mount $ROOTFS_TARGET_TYPE $MOUNT_POINT
 

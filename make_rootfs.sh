@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TARGET="x86_64"  ## default target
+ARCH="x86_64"    ## default target
 SOFTWARE=' '     ##
 MOUNT_POINT=/mnt ## default the mount point for the root filesystem
 
@@ -28,7 +28,7 @@ while true;
 do
 	case $1 in
 	-a|--arch)
-		TARGET=$2
+		ARCH=$2
 		shift 2
 		;;
 	-i|--install)
@@ -60,38 +60,34 @@ do
 	esac
 done
 
+if [[ $ARCH != "x86_64" && $ARCH != "arm64" && $ARCH != "riscv64" ]]; then
+	echo "Currently only x86_64, arm64 and riscv64 are supported."
+	exit
+fi
+
+if [ $ARCH = "x86_64" ]; then
+	ARCH=amd64
+fi
+
 color_echo "Install dependencies"
 if [ ! `which arch-chroot` ]; then
 	sudo apt install arch-install-scripts
 fi
 
-if [[ $TARGET = "arm64" && ! `which qemu-aarch64-static` ]]; then
+if [[ $ARCH = "arm64" && ! `which qemu-aarch64-static` ]]; then
 	sudo apt install qemu-user-static
 fi
 
-if [[ $TARGET = "riscv64" && ! `which qemu-riscv64-static` ]]; then
+if [[ $ARCH = "riscv64" && ! `which qemu-riscv64-static` ]]; then
 	sudo apt install qemu-user-static
 fi
 
 color_echo "Get ubuntu-base URL"
-case $TARGET in
-	"x86_64" | "")
-		URL=http://cdimage.ubuntu.com/ubuntu-base/releases/22.04/release/ubuntu-base-22.04-base-amd64.tar.gz
-		;;
-	"arm64")
-		URL=http://cdimage.ubuntu.com/ubuntu-base/releases/22.04/release/ubuntu-base-22.04-base-arm64.tar.gz
-		;;
-	"riscv64")
-		URL=http://cdimage.ubuntu.com/ubuntu-base/releases/22.04/release/ubuntu-base-22.04-base-riscv64.tar.gz
-		;;
-	*)
-		echo "Currently only x86_64, arm64 and riscv64 are supported."
-		exit
-		;;
-esac
+VERSION=22.04
+URL=https://cdimage.ubuntu.com/ubuntu-base/releases/${VERSION}/release/ubuntu-base-${VERSION}-base-${ARCH}.tar.gz
 
 ROOTFS=$OUTPUT/${ROOTFS_NAME}.${ROOTFS_TYPE}
-ROOTFS_TARGET_TYPE=$OUTPUT/${ROOTFS_NAME}_${TARGET}.${ROOTFS_TYPE}
+ROOTFS_TARGET_TYPE=$OUTPUT/${ROOTFS_NAME}_${ARCH}.${ROOTFS_TYPE}
 UBUNTU_BASE_PACKAGE=`basename $URL`
 
 mkdir -p $DOWNLOAD

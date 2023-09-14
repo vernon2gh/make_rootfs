@@ -83,7 +83,7 @@ if [[ $ARCH = "riscv64" && ! `which qemu-riscv64-static` ]]; then
 fi
 
 color_echo "Get ubuntu-base URL"
-VERSION=22.04
+VERSION=23.04
 URL=https://cdimage.ubuntu.com/ubuntu-base/releases/${VERSION}/release/ubuntu-base-${VERSION}-base-${ARCH}.tar.gz
 
 ROOTFS=$OUTPUT/${ROOTFS_NAME}.${ROOTFS_TYPE}

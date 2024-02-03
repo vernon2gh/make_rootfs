@@ -51,3 +51,5 @@ Optional parameters:
    the default is 95MB
 2. `-smp` specifies the number of CPU cores of the virtual machine,
    which is one CPU core by default
+3. `-M xxx,dumpdtb=x.dtb` to dump device tree binary, and than use shell command
+   `dtc x.dtb -o x.dts` convert to device tree source.

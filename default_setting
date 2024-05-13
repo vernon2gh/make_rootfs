@@ -5,7 +5,7 @@ apt update
 ## Install language package
 apt install -y language-pack-en language-pack-zh-hans xterm
 
-## Insatll systemd package
+## Install systemd package
 mv /run/systemd/resolve/stub-resolv.conf /run/systemd/resolve/stub-resolv.conf.back
 apt install -y systemd-sysv
 sed -i "s/^BindsTo=dev-%i.device/BindsTo=dev-%i/" /lib/systemd/system/serial-getty@.service

@@ -74,6 +74,10 @@ if [ ! `which arch-chroot` ]; then
 	sudo apt install arch-install-scripts
 fi
 
+if [ ! `which samba` ]; then
+	sudo apt install samba
+fi
+
 if [[ $ARCH = "arm64" && ! `which qemu-aarch64-static` ]]; then
 	sudo apt install qemu-user-static
 fi
@@ -124,7 +128,6 @@ fi
 
 color_echo "Install software by overlay"
 mkdir -p $OVERLAY
-echo "This is overlay root directory." > $OVERLAY/README
 sudo cp -r $OVERLAY/* $MOUNT_POINT
 
 sudo umount $MOUNT_POINT

@@ -42,7 +42,7 @@ $ qemu-system-x86_64 -hda rootfs.ext4 -kernel bzImage -append "root=/dev/sda rw 
 $ qemu-system-aarch64 -M virt -cpu cortex-a57 -hda rootfs.ext4 -kernel Image -append "root=/dev/vda rw console=ttyAMA0" -nographic
 
 ## riscv64
-$ qemu-system-riscv64 -M virt -drive file=rootfs.ext4,format=raw,id=hd0 -device virtio-blk-device,drive=hd0 -kernel Image -append "root=/dev/vda rw console=ttyS0" -netdev user,id=eth0 -device virtio-net-device,netdev=eth0 -nographic
+$ qemu-system-riscv64 -M virt -drive file=rootfs.ext4,format=raw,id=hd0 -device virtio-blk-device,drive=hd0 -kernel Image -append "root=/dev/vda rw console=ttyS0" -nographic
 ```
 
 Optional parameters:
@@ -51,5 +51,7 @@ Optional parameters:
    the default is 95MB
 2. `-smp` specifies the number of CPU cores of the virtual machine,
    which is one CPU core by default
-3. `-M xxx,dumpdtb=x.dtb` to dump device tree binary, and than use shell command
+3. `-netdev user,id=eth0,smb=/xxx/share -device virtio-net,netdev=eth0` enable
+   network and specifies `/xxx/share` to share files between your guest and host.
+4. `-M xxx,dumpdtb=x.dtb` to dump device tree binary, and than use shell command
    `dtc x.dtb -o x.dts` convert to device tree source.

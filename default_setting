@@ -11,8 +11,12 @@ apt install -y systemd-sysv
 sed -i "s/^BindsTo=dev-%i.device/BindsTo=dev-%i/" /lib/systemd/system/serial-getty@.service
 mv /run/systemd/resolve/stub-resolv.conf.back /run/systemd/resolve/stub-resolv.conf
 
-## Insatll udev package
+## Install udev package
 apt install -y udev
+
+## Install samba client package
+apt install -y cifs-utils
+mkdir /root/share
 
 ## Login root user automatically
 sed -i "s/-o '-p -- \\\\\\\u'/-a root/" /lib/systemd/system/serial-getty@.service
@@ -33,3 +37,22 @@ echo "[Match]" > /etc/systemd/network/eth.network
 echo "Name=*" >> /etc/systemd/network/eth.network
 echo "[Network]" >> /etc/systemd/network/eth.network
 echo "DHCP=yes" >> /etc/systemd/network/eth.network
+
+## Auto mount share directory
+echo "
+[Unit]
+Description=share file service
+Wants=network-online.target
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/mount -t cifs -o user=root,password=root //10.0.2.4/qemu /root/share
+StandardOutput=syslog
+StandardError=null
+
+[Install]
+WantedBy=multi-user.target
+" > /usr/lib/systemd/system/share-file.service
+
+systemctl enable share-file

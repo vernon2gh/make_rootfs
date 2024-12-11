@@ -52,6 +52,7 @@ Optional parameters:
 2. `-smp` specifies the number of CPU cores of the virtual machine,
    which is one CPU core by default
 3. `-netdev user,id=eth0,smb=/xxx/share -device virtio-net,netdev=eth0` enable
-   network and specifies `/xxx/share` to share files between your guest and host.
+   network and specifies `/xxx/share` to share files between your guest and host,
+   and the guest kernel is compiled with `CONFIG_CIFS`.
 4. `-M xxx,dumpdtb=x.dtb` to dump device tree binary, and than use shell command
    `dtc x.dtb -o x.dts` convert to device tree source.

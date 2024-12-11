@@ -31,12 +31,14 @@ echo "export TERM=xterm-256color" >> /root/.bash_aliases
 echo "eval \`/usr/bin/resize\`" >> /root/.bashrc
 
 ## Enable network
-systemctl enable systemd-networkd
+echo "
+[Match]
+Name=*
+[Network]
+DHCP=yes
+" > /etc/systemd/network/eth.network
 
-echo "[Match]" > /etc/systemd/network/eth.network
-echo "Name=*" >> /etc/systemd/network/eth.network
-echo "[Network]" >> /etc/systemd/network/eth.network
-echo "DHCP=yes" >> /etc/systemd/network/eth.network
+systemctl enable systemd-networkd
 
 ## Auto mount share directory
 echo "
@@ -47,9 +49,9 @@ After=network.target
 
 [Service]
 Type=simple
+Restart=on-failure
+RestartSec=5
 ExecStart=/usr/bin/mount -t cifs -o user=root,password=root //10.0.2.4/qemu /root/share
-StandardOutput=syslog
-StandardError=null
 
 [Install]
 WantedBy=multi-user.target

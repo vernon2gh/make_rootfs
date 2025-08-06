@@ -75,23 +75,36 @@ if [ $ARCH = "x86_64" ]; then
 	ARCH=amd64
 fi
 
+if [ -f /etc/debian_version ]; then
+	PACKAGE_MANAGER=apt
+elif [ -f /etc/redhat-release ] || [ -f /etc/fedora-release ]; then
+	PACKAGE_MANAGER=dnf
+	if [ $QCOW2 = "false" ]; then
+		echo "Please use the --qcow2 option."
+		exit
+	fi
+else
+	echo "Not supported by current Linux distributions."
+	exit
+fi
+
 function rootfs_only()
 {
 	color_echo "Install dependencies"
 	if [ ! `which arch-chroot` ]; then
-		sudo apt install arch-install-scripts
+		sudo $PACKAGE_MANAGER install arch-install-scripts
 	fi
 
 	if [ ! `which samba` ]; then
-		sudo apt install samba
+		sudo $PACKAGE_MANAGER install samba
 	fi
 
 	if [[ $ARCH = "arm64" && ! `which qemu-aarch64-static` ]]; then
-		sudo apt install qemu-user-static
+		sudo $PACKAGE_MANAGER install qemu-user-static
 	fi
 
 	if [[ $ARCH = "riscv64" && ! `which qemu-riscv64-static` ]]; then
-		sudo apt install qemu-user-static
+		sudo $PACKAGE_MANAGER install qemu-user-static
 	fi
 
 	color_echo "Get ubuntu-base URL"
@@ -146,11 +159,11 @@ function rootfs_qcow2()
 {
 	color_echo "Install dependencies"
 	if [ ! `which qemu-img` ]; then
-		sudo dnf install qemu-img
+		sudo $PACKAGE_MANAGER install qemu-img
 	fi
 
 	if [ ! `which virt-customize` ]; then
-		sudo dnf install guestfs-tools
+		sudo $PACKAGE_MANAGER install guestfs-tools
 	fi
 
 	color_echo "Get ubuntu-base qcow2 URL"

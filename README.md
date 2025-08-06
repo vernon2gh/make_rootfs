@@ -14,6 +14,7 @@ Options:
 -a, --arch x86_64/arm64/riscv64  Specify the architecture
 -i, --install 'software'         Specify the software to be install
 -m, --mount directory            Specifies the mount point for the root filesystem
+-q, --qcow2                      Specifies create the root filesystem from qcow2 image
 -h, --help                       Display this help
 ```
 
@@ -56,3 +57,4 @@ Optional parameters:
    and the guest kernel is compiled with `CONFIG_CIFS`.
 4. `-M xxx,dumpdtb=x.dtb` to dump device tree binary, and than use shell command
    `dtc x.dtb -o x.dts` convert to device tree source.
+5. With the qcow2 images, rootfs is in `/dev/sda1`, not `/dev/sda`

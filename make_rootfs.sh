@@ -95,7 +95,7 @@ function rootfs_only()
 	fi
 
 	color_echo "Get ubuntu-base URL"
-	VERSION=24.04
+	VERSION=24.04.2
 	URL=https://cdimage.ubuntu.com/ubuntu-base/releases/${VERSION}/release/ubuntu-base-${VERSION}-base-${ARCH}.tar.gz
 
 	ROOTFS_NAME=rootfs

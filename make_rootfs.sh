@@ -147,7 +147,6 @@ function rootfs_only()
 	fi
 
 	color_echo "Install software by overlay"
-	mkdir -p $OVERLAY
 	sudo cp -r $OVERLAY/* $MOUNT_POINT
 
 	sudo umount $MOUNT_POINT
@@ -200,6 +199,14 @@ function rootfs_qcow2()
 	if [ ! -z "$SOFTWARE" ]; then
 		virt-customize -a $ROOTFS_TARGET_TYPE --run-command "apt install -y $SOFTWARE"
 	fi
+
+	color_echo "Install software by overlay"
+	tar -zcf $OVERLAY.tar.gz -C $OVERLAY .
+	virt-customize -a $ROOTFS_TARGET_TYPE			\
+		--upload $OVERLAY.tar.gz:/overlay.tar.gz	\
+		--run-command "tar -zxf /overlay.tar.gz -C /"	\
+		--delete /overlay.tar.gz
+	rm -fr $OVERLAY.tar.gz
 
 	ln -sf `pwd`/$ROOTFS_TARGET_TYPE $ROOTFS
 }

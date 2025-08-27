@@ -11,7 +11,7 @@ OUTPUT=$ROOTDIR/out
 DOWNLOAD=$OUTPUT/download
 DEFAULT_SETTING=default_setting
 
-mkdir -p $OVERLAY $OUTPUT $DOWNLOAD
+mkdir -p $OVERLAY $OUTPUT $DOWNLOAD share
 
 function color_echo() {
 	echo -e "\e[32m[make_rootfs] $1\e[0m"

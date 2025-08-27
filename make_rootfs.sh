@@ -147,7 +147,9 @@ function rootfs_only()
 	fi
 
 	color_echo "Install software by overlay"
-	sudo cp -r $OVERLAY/* $MOUNT_POINT
+	if [ ! -z $(find $OVERLAY -mindepth 1 -maxdepth 1) ]; then
+		sudo cp -r $OVERLAY/* $MOUNT_POINT
+	fi
 
 	sudo umount $MOUNT_POINT
 
@@ -201,12 +203,14 @@ function rootfs_qcow2()
 	fi
 
 	color_echo "Install software by overlay"
-	tar -zcf $OVERLAY.tar.gz -C $OVERLAY .
-	virt-customize -a $ROOTFS_TARGET_TYPE			\
-		--upload $OVERLAY.tar.gz:/overlay.tar.gz	\
-		--run-command "tar -zxf /overlay.tar.gz -C /"	\
-		--delete /overlay.tar.gz
-	rm -fr $OVERLAY.tar.gz
+	if [ ! -z $(find $OVERLAY -mindepth 1 -maxdepth 1) ]; then
+		tar -zcf $OVERLAY.tar.gz -C $OVERLAY .
+		virt-customize -a $ROOTFS_TARGET_TYPE			\
+			--upload $OVERLAY.tar.gz:/overlay.tar.gz	\
+			--run-command "tar -zxf /overlay.tar.gz -C /"	\
+			--delete /overlay.tar.gz
+		rm -fr $OVERLAY.tar.gz
+	fi
 
 	ln -sf `pwd`/$ROOTFS_TARGET_TYPE $ROOTFS
 }

@@ -183,10 +183,9 @@ function rootfs_qcow2()
 
 	if [ ! -e $ROOTFS_TARGET_TYPE ]; then
 		cp $DOWNLOAD/$UBUNTU_BASE_PACKAGE $ROOTFS_TARGET_TYPE
-		UBUNTU_QCOW2_IMG=$ROOTFS_TARGET_TYPE
 
-		qemu-img resize $UBUNTU_QCOW2_IMG +10G
-		virt-customize -a $UBUNTU_QCOW2_IMG				\
+		qemu-img resize $ROOTFS_TARGET_TYPE +10G
+		virt-customize -a $ROOTFS_TARGET_TYPE				\
 			--root-password password:root				\
 			--run-command "growpart /dev/sda 1"			\
 			--run-command "resize2fs /dev/sda1"			\
@@ -199,10 +198,10 @@ function rootfs_qcow2()
 
 	color_echo "Install software by apt"
 	if [ ! -z "$SOFTWARE" ]; then
-		virt-customize -a $UBUNTU_QCOW2_IMG --run-command "apt install -y $SOFTWARE"
+		virt-customize -a $ROOTFS_TARGET_TYPE --run-command "apt install -y $SOFTWARE"
 	fi
 
-	ln -sf `pwd`/$UBUNTU_QCOW2_IMG $ROOTFS
+	ln -sf `pwd`/$ROOTFS_TARGET_TYPE $ROOTFS
 }
 
 if [ $QCOW2 = "true" ]; then

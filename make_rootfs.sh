@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ARCH="x86_64"    ## default target
-SOFTWARE=' '     ##
+SOFTWARE=''      ##
 MOUNT_POINT=/mnt ## default the mount point for the root filesystem
 QCOW2="false"
 

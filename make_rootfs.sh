@@ -219,7 +219,7 @@ function rootfs_qcow2_fedora()
 {
 	color_echo "Get fedora-base qcow2 URL"
 	VERSION=42
-	URL=https://download.fedoraproject.org/pub/fedora/linux/releases/42/Server/x86_64/images/Fedora-Server-Guest-Generic-42-1.1.x86_64.qcow2
+	URL=https://download.fedoraproject.org/pub/fedora/linux/releases/${VERSION}/Server/${ARCH}/images/Fedora-Server-Guest-Generic-${VERSION}-1.1.${ARCH}.qcow2
 
 	ROOTFS_NAME=fedora
 	ROOTFS_TYPE=qcow2

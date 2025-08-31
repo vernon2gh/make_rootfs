@@ -149,12 +149,7 @@ function rootfs_qcow2_common()
 {
 	color_echo "Install software by overlay"
 	if [ ! -z $(find $OVERLAY -mindepth 1 -maxdepth 1) ]; then
-		tar -zcf $OVERLAY.tar.gz -C $OVERLAY .
-		virt-customize -a $ROOTFS_TARGET_TYPE			\
-			--upload $OVERLAY.tar.gz:/overlay.tar.gz	\
-			--run-command "tar -zxf /overlay.tar.gz -C /"	\
-			--delete /overlay.tar.gz
-		rm -fr $OVERLAY.tar.gz
+		virt-copy-in -a $ROOTFS_TARGET_TYPE $OVERLAY/* /
 	fi
 
 	color_echo "Generate initramfs image"

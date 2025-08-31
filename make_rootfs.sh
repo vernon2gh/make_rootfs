@@ -3,6 +3,7 @@
 ARCH="x86_64"    ## default target
 SOFTWARE=''      ##
 MOUNT_POINT=/mnt ## default the mount point for the root filesystem
+GUEST="ubuntu"   ## default guest os
 QCOW2="false"
 
 ROOTDIR=`dirname $0`
@@ -18,8 +19,8 @@ function color_echo() {
 }
 
 ## Parsing parameters
-SHORTOPTS="a:,i:,m:,q,h"
-LONGOPTS="arch:,install:,mount:,qcow2,help"
+SHORTOPTS="a:,i:,m:,g:,q,h"
+LONGOPTS="arch:,install:,mount:,guest:,qcow2,help"
 ARGS=$(getopt --options $SHORTOPTS	\
 	--longoptions $LONGOPTS -- "$@" )
 
@@ -41,6 +42,10 @@ do
 		mkdir -p $MOUNT_POINT
 		shift 2
 		;;
+	-g|--guest)
+		GUEST=$2
+		shift 2
+		;;
 	-q|--qcow2)
 		QCOW2="true"
 		shift
@@ -55,6 +60,7 @@ do
 		echo "-a, --arch x86_64/arm64/riscv64  Specify the architecture"
 		echo "-i, --install 'software'         Specify the software to be install"
 		echo "-m, --mount directory            Specifies the mount point for the root filesystem"
+		echo "-g, --guest ubuntu/fedora        Specifies the guest os for the root filesystem"
 		echo "-q, --qcow2                      Specifies create the root filesystem from qcow2 image"
 		echo "-h, --help                       Display this help"
 		exit
@@ -154,12 +160,12 @@ function rootfs_qcow2_common()
 	color_echo "Generate initramfs image"
 	KV=$(find $OVERLAY/lib/modules -maxdepth 1 -mindepth 1 -type d -printf '%f\n')
 	if [ ! -z "$KV" ]; then
-		sudo dracut -f -k $OVERLAY/lib/modules/$KV out/initramfs.img $KV
+		sudo dracut -f -k $OVERLAY/lib/modules/$KV out/$GUEST-initramfs.img $KV
 		rm -fr $OVERLAY/lib/modules/$KV
 	fi
 }
 
-function rootfs_qcow2()
+function rootfs_qcow2_ubuntu()
 {
 	color_echo "Get ubuntu-base qcow2 URL"
 	VERSION=24.04
@@ -201,6 +207,45 @@ function rootfs_qcow2()
 	ln -sf `pwd`/$ROOTFS_TARGET_TYPE $ROOTFS
 }
 
+function rootfs_qcow2_fedora()
+{
+	color_echo "Get fedora-base qcow2 URL"
+	VERSION=42
+	URL=https://download.fedoraproject.org/pub/fedora/linux/releases/42/Server/x86_64/images/Fedora-Server-Guest-Generic-42-1.1.x86_64.qcow2
+
+	ROOTFS_NAME=fedora
+	ROOTFS_TYPE=qcow2
+	ROOTFS=$OUTPUT/${ROOTFS_NAME}.${ROOTFS_TYPE}
+	ROOTFS_TARGET_TYPE=$OUTPUT/${ROOTFS_NAME}_${ARCH}.${ROOTFS_TYPE}
+	UBUNTU_BASE_PACKAGE=`basename $URL`
+
+	if [ ! -e $DOWNLOAD/$UBUNTU_BASE_PACKAGE ]; then
+		color_echo "Download ubuntu base qcow2 package"
+		wget $URL -P $DOWNLOAD
+		exit
+	fi
+
+	if [ ! -e $ROOTFS_TARGET_TYPE ]; then
+		cp $DOWNLOAD/$UBUNTU_BASE_PACKAGE $ROOTFS_TARGET_TYPE
+
+		qemu-img resize $ROOTFS_TARGET_TYPE +10G
+		virt-customize -a $ROOTFS_TARGET_TYPE				\
+			--upload $DEFAULT_SETTING:/root/$DEFAULT_SETTING	\
+			--run-command "chmod +x /root/$DEFAULT_SETTING"		\
+			--run-command "/root/$DEFAULT_SETTING"			\
+			--delete /root/$DEFAULT_SETTING
+	fi
+
+	color_echo "Install software by dnf"
+	if [ ! -z "$SOFTWARE" ]; then
+		virt-customize -a $ROOTFS_TARGET_TYPE --run-command "dnf install -y $SOFTWARE"
+	fi
+
+	rootfs_qcow2_common
+
+	ln -sf `pwd`/$ROOTFS_TARGET_TYPE $ROOTFS
+}
+
 if [ $QCOW2 = "true" ]; then
 	color_echo "Install dependencies"
 	if [ ! `which qemu-img` ]; then
@@ -215,8 +260,20 @@ if [ $QCOW2 = "true" ]; then
 		sudo $PACKAGE_MANAGER install dracut
 	fi
 
-	rootfs_qcow2
+	if [ $GUEST = "ubuntu" ]; then
+		rootfs_qcow2_ubuntu
+	elif [ $GUEST = "fedora" ]; then
+		rootfs_qcow2_fedora
+	else
+		echo "Not supported by guest Linux distributions."
+		exit
+	fi
 else
+	if [ $GUEST != "ubuntu" ]; then
+		echo "make rootfs.ext4 only support ubuntu guest os."
+		exit
+	fi
+
 	color_echo "Install dependencies"
 	if [ ! `which arch-chroot` ]; then
 		sudo $PACKAGE_MANAGER install arch-install-scripts

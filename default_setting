@@ -34,6 +34,9 @@ if [ -f /etc/debian_version ]; then
 
 	systemctl enable systemd-networkd
 elif [ -f /etc/redhat-release ] || [ -f /etc/fedora-release ]; then
+	## Set the storage space of root directory to the maximum free storage
+	lvextend -l +100%FREE --resizefs /dev/mapper/systemVG-LVRoot
+
 	## Login root user automatically
 	sed -i "s/-o '-- \\\\\\\u'/-a root/" /lib/systemd/system/serial-getty@.service
 fi

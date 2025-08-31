@@ -1,44 +1,48 @@
 #!/bin/bash
 
-apt update
+if [ -f /etc/debian_version ]; then
+	apt update
 
-## Install language package
-apt install -y language-pack-en language-pack-zh-hans xterm
+	## Install language package
+	apt install -y language-pack-en language-pack-zh-hans xterm
 
-## Install systemd package
-mv /run/systemd/resolve/stub-resolv.conf /run/systemd/resolve/stub-resolv.conf.back
-apt install -y systemd-sysv
-sed -i "s/^BindsTo=dev-%i.device/BindsTo=dev-%i/" /lib/systemd/system/serial-getty@.service
-mv /run/systemd/resolve/stub-resolv.conf.back /run/systemd/resolve/stub-resolv.conf
+	## Install systemd package
+	mv /run/systemd/resolve/stub-resolv.conf /run/systemd/resolve/stub-resolv.conf.back
+	apt install -y systemd-sysv
+	sed -i "s/^BindsTo=dev-%i.device/BindsTo=dev-%i/" /lib/systemd/system/serial-getty@.service
+	mv /run/systemd/resolve/stub-resolv.conf.back /run/systemd/resolve/stub-resolv.conf
 
-## Install udev package
-apt install -y udev
+	## Install udev package
+	apt install -y udev
 
-## Install samba client package
-apt install -y cifs-utils
-mkdir /root/share
+	## Install samba client package
+	apt install -y cifs-utils
 
-## Login root user automatically
-sed -i "s/-o '-p -- \\\\\\\u'/-a root/" /lib/systemd/system/serial-getty@.service
+	## Login root user automatically
+	sed -i "s/-o '-p -- \\\\\\\u'/-a root/" /lib/systemd/system/serial-getty@.service
+
+	## Resize the window after each login bash
+	echo "eval \`/usr/bin/resize\`" >> /root/.bashrc
+
+	## Enable network
+	echo "
+	[Match]
+	Name=*
+	[Network]
+	DHCP=yes
+	" > /etc/systemd/network/eth.network
+
+	systemctl enable systemd-networkd
+elif [ -f /etc/redhat-release ] || [ -f /etc/fedora-release ]; then
+	## Login root user automatically
+	sed -i "s/-o '-- \\\\\\\u'/-a root/" /lib/systemd/system/serial-getty@.service
+fi
 
 ## Modify host name
 echo "test-pc" > /etc/hostname
 
 ## Set terminal color
-echo "export TERM=xterm-256color" >> /root/.bash_aliases
-
-## Resize the window after each login bash
-echo "eval \`/usr/bin/resize\`" >> /root/.bashrc
-
-## Enable network
-echo "
-[Match]
-Name=*
-[Network]
-DHCP=yes
-" > /etc/systemd/network/eth.network
-
-systemctl enable systemd-networkd
+echo "export TERM=xterm-256color" >> /root/.bashrc
 
 ## Auto mount share directory
 echo "
@@ -57,4 +61,5 @@ ExecStart=/usr/bin/mount -t cifs -o user=root,password=root //10.0.2.4/qemu /roo
 WantedBy=multi-user.target
 " > /usr/lib/systemd/system/share-file.service
 
+mkdir /root/share
 systemctl enable share-file

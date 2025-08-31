@@ -206,6 +206,10 @@ if [ $QCOW2 = "true" ]; then
 		sudo $PACKAGE_MANAGER install guestfs-tools
 	fi
 
+	if [ ! `which dracut` ]; then
+		sudo $PACKAGE_MANAGER install dracut
+	fi
+
 	rootfs_qcow2
 else
 	color_echo "Install dependencies"

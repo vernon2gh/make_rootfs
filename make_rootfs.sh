@@ -87,6 +87,11 @@ if [[ $QCOW2 = "false" && $GUEST != "ubuntu" ]]; then
 	exit
 fi
 
+if [[ $QCOW2 = "true" && $ARCH != $(uname -m) ]]; then
+	echo "For qcow2 image, ARCH must be consistent with the local architecture."
+	exit
+fi
+
 if [ $ARCH = "x86_64" ]; then
 	ARCH_ALIAS=amd64
 elif [ $ARCH = "aarch64" ]; then

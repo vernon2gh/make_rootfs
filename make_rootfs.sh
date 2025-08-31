@@ -139,6 +139,26 @@ function rootfs_only()
 	ln -sf `pwd`/$ROOTFS_TARGET_TYPE $ROOTFS
 }
 
+function rootfs_qcow2_common()
+{
+	color_echo "Install software by overlay"
+	if [ ! -z $(find $OVERLAY -mindepth 1 -maxdepth 1) ]; then
+		tar -zcf $OVERLAY.tar.gz -C $OVERLAY .
+		virt-customize -a $ROOTFS_TARGET_TYPE			\
+			--upload $OVERLAY.tar.gz:/overlay.tar.gz	\
+			--run-command "tar -zxf /overlay.tar.gz -C /"	\
+			--delete /overlay.tar.gz
+		rm -fr $OVERLAY.tar.gz
+	fi
+
+	color_echo "Generate initramfs image"
+	KV=$(find $OVERLAY/lib/modules -maxdepth 1 -mindepth 1 -type d -printf '%f\n')
+	if [ ! -z "$KV" ]; then
+		sudo dracut -f -k $OVERLAY/lib/modules/$KV out/initramfs.img $KV
+		rm -fr $OVERLAY/lib/modules/$KV
+	fi
+}
+
 function rootfs_qcow2()
 {
 	color_echo "Get ubuntu-base qcow2 URL"
@@ -176,22 +196,7 @@ function rootfs_qcow2()
 		virt-customize -a $ROOTFS_TARGET_TYPE --run-command "apt install -y $SOFTWARE"
 	fi
 
-	color_echo "Install software by overlay"
-	if [ ! -z $(find $OVERLAY -mindepth 1 -maxdepth 1) ]; then
-		tar -zcf $OVERLAY.tar.gz -C $OVERLAY .
-		virt-customize -a $ROOTFS_TARGET_TYPE			\
-			--upload $OVERLAY.tar.gz:/overlay.tar.gz	\
-			--run-command "tar -zxf /overlay.tar.gz -C /"	\
-			--delete /overlay.tar.gz
-		rm -fr $OVERLAY.tar.gz
-	fi
-
-	color_echo "Generate initramfs image"
-	KV=$(find $OVERLAY/lib/modules -maxdepth 1 -mindepth 1 -type d -printf '%f\n')
-	if [ ! -z "$KV" ]; then
-		sudo dracut -f -k $OVERLAY/lib/modules/$KV out/initramfs.img $KV
-		rm -fr $OVERLAY/lib/modules/$KV
-	fi
+	rootfs_qcow2_common
 
 	ln -sf `pwd`/$ROOTFS_TARGET_TYPE $ROOTFS
 }

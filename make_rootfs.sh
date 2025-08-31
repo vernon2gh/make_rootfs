@@ -57,12 +57,12 @@ do
 		echo "make a simple root file system"
 		echo ""
 		echo "Options:"
-		echo "-a, --arch x86_64/arm64/riscv64  Specify the architecture"
-		echo "-i, --install 'software'         Specify the software to be install"
-		echo "-m, --mount directory            Specifies the mount point for the root filesystem"
-		echo "-g, --guest ubuntu/fedora        Specifies the guest os for the root filesystem"
-		echo "-q, --qcow2                      Specifies create the root filesystem from qcow2 image"
-		echo "-h, --help                       Display this help"
+		echo "-a, --arch x86_64/aarch64/riscv64  Specify the architecture"
+		echo "-i, --install 'software'           Specify the software to be install"
+		echo "-m, --mount directory              Specifies the mount point for the root filesystem"
+		echo "-g, --guest ubuntu/fedora          Specifies the guest os for the root filesystem"
+		echo "-q, --qcow2                        Specifies create the root filesystem from qcow2 image"
+		echo "-h, --help                         Display this help"
 		exit
 		;;
 	--)
@@ -72,13 +72,13 @@ do
 	esac
 done
 
-if [[ $ARCH != "x86_64" && $ARCH != "arm64" && $ARCH != "riscv64" ]]; then
-	echo "Currently only x86_64, arm64 and riscv64 are supported."
+if [[ $ARCH != "x86_64" && $ARCH != "aarch64" && $ARCH != "riscv64" ]]; then
+	echo "Currently only x86_64, aarch64 and riscv64 are supported."
 	exit
 fi
 
 if [[ $ARCH = "riscv64" && $GUEST = "fedora" ]]; then
-	echo "guest fedora is only x86_64 and arm64 are supported."
+	echo "guest fedora is only x86_64 and aarch64 are supported."
 	exit
 fi
 
@@ -88,7 +88,11 @@ if [[ $QCOW2 = "false" && $GUEST != "ubuntu" ]]; then
 fi
 
 if [ $ARCH = "x86_64" ]; then
-	ARCH=amd64
+	ARCH_ALIAS=amd64
+elif [ $ARCH = "aarch64" ]; then
+	ARCH_ALIAS=arm64
+elif [ $ARCH = "riscv64" ]; then
+	ARCH_ALIAS=riscv64
 fi
 
 if [ -f /etc/debian_version ]; then
@@ -108,7 +112,7 @@ function rootfs_only()
 {
 	color_echo "Get ubuntu-base URL"
 	VERSION=24.04.2
-	URL=https://cdimage.ubuntu.com/ubuntu-base/releases/${VERSION}/release/ubuntu-base-${VERSION}-base-${ARCH}.tar.gz
+	URL=https://cdimage.ubuntu.com/ubuntu-base/releases/${VERSION}/release/ubuntu-base-${VERSION}-base-${ARCH_ALIAS}.tar.gz
 
 	ROOTFS_NAME=rootfs
 	ROOTFS_TYPE=ext4
@@ -174,7 +178,7 @@ function rootfs_qcow2_ubuntu()
 {
 	color_echo "Get ubuntu-base qcow2 URL"
 	VERSION=24.04
-	URL=https://cloud-images.ubuntu.com/releases/noble/release/ubuntu-${VERSION}-server-cloudimg-${ARCH}.img
+	URL=https://cloud-images.ubuntu.com/releases/noble/release/ubuntu-${VERSION}-server-cloudimg-${ARCH_ALIAS}.img
 
 	ROOTFS_NAME=ubuntu
 	ROOTFS_TYPE=qcow2
@@ -282,7 +286,7 @@ else
 		sudo $PACKAGE_MANAGER install samba
 	fi
 
-	if [[ $ARCH = "arm64" && ! `which qemu-aarch64-static` ]]; then
+	if [[ $ARCH = "aarch64" && ! `which qemu-aarch64-static` ]]; then
 		sudo $PACKAGE_MANAGER install qemu-user-static
 	fi
 

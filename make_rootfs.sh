@@ -77,6 +77,16 @@ if [[ $ARCH != "x86_64" && $ARCH != "arm64" && $ARCH != "riscv64" ]]; then
 	exit
 fi
 
+if [[ $ARCH = "riscv64" && $GUEST = "fedora" ]]; then
+	echo "guest fedora is only x86_64 and arm64 are supported."
+	exit
+fi
+
+if [[ $QCOW2 = "false" && $GUEST != "ubuntu" ]]; then
+	echo "make rootfs.ext4 only support ubuntu guest os."
+	exit
+fi
+
 if [ $ARCH = "x86_64" ]; then
 	ARCH=amd64
 fi
@@ -263,11 +273,6 @@ if [ $QCOW2 = "true" ]; then
 		exit
 	fi
 else
-	if [ $GUEST != "ubuntu" ]; then
-		echo "make rootfs.ext4 only support ubuntu guest os."
-		exit
-	fi
-
 	color_echo "Install dependencies"
 	if [ ! `which arch-chroot` ]; then
 		sudo $PACKAGE_MANAGER install arch-install-scripts

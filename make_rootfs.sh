@@ -90,23 +90,6 @@ fi
 
 function rootfs_only()
 {
-	color_echo "Install dependencies"
-	if [ ! `which arch-chroot` ]; then
-		sudo $PACKAGE_MANAGER install arch-install-scripts
-	fi
-
-	if [ ! `which samba` ]; then
-		sudo $PACKAGE_MANAGER install samba
-	fi
-
-	if [[ $ARCH = "arm64" && ! `which qemu-aarch64-static` ]]; then
-		sudo $PACKAGE_MANAGER install qemu-user-static
-	fi
-
-	if [[ $ARCH = "riscv64" && ! `which qemu-riscv64-static` ]]; then
-		sudo $PACKAGE_MANAGER install qemu-user-static
-	fi
-
 	color_echo "Get ubuntu-base URL"
 	VERSION=24.04.2
 	URL=https://cdimage.ubuntu.com/ubuntu-base/releases/${VERSION}/release/ubuntu-base-${VERSION}-base-${ARCH}.tar.gz
@@ -158,15 +141,6 @@ function rootfs_only()
 
 function rootfs_qcow2()
 {
-	color_echo "Install dependencies"
-	if [ ! `which qemu-img` ]; then
-		sudo $PACKAGE_MANAGER install qemu-img
-	fi
-
-	if [ ! `which virt-customize` ]; then
-		sudo $PACKAGE_MANAGER install guestfs-tools
-	fi
-
 	color_echo "Get ubuntu-base qcow2 URL"
 	VERSION=24.04
 	URL=https://cloud-images.ubuntu.com/releases/noble/release/ubuntu-${VERSION}-server-cloudimg-${ARCH}.img
@@ -223,7 +197,33 @@ function rootfs_qcow2()
 }
 
 if [ $QCOW2 = "true" ]; then
+	color_echo "Install dependencies"
+	if [ ! `which qemu-img` ]; then
+		sudo $PACKAGE_MANAGER install qemu-img
+	fi
+
+	if [ ! `which virt-customize` ]; then
+		sudo $PACKAGE_MANAGER install guestfs-tools
+	fi
+
 	rootfs_qcow2
 else
+	color_echo "Install dependencies"
+	if [ ! `which arch-chroot` ]; then
+		sudo $PACKAGE_MANAGER install arch-install-scripts
+	fi
+
+	if [ ! `which samba` ]; then
+		sudo $PACKAGE_MANAGER install samba
+	fi
+
+	if [[ $ARCH = "arm64" && ! `which qemu-aarch64-static` ]]; then
+		sudo $PACKAGE_MANAGER install qemu-user-static
+	fi
+
+	if [[ $ARCH = "riscv64" && ! `which qemu-riscv64-static` ]]; then
+		sudo $PACKAGE_MANAGER install qemu-user-static
+	fi
+
 	rootfs_only
 fi

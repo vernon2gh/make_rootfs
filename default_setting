@@ -4,7 +4,7 @@ if [ -f /etc/debian_version ]; then
 	apt update
 
 	## Install language package
-	apt install -y language-pack-en language-pack-zh-hans xterm
+	apt install -y language-pack-en language-pack-zh-hans
 
 	## Install systemd package
 	mv /run/systemd/resolve/stub-resolv.conf /run/systemd/resolve/stub-resolv.conf.back
@@ -22,6 +22,7 @@ if [ -f /etc/debian_version ]; then
 	sed -i "s/-o '-p -- \\\\\\\u'/-a root/" /lib/systemd/system/serial-getty@.service
 
 	## Resize the window after each login bash
+	apt install -y xterm
 	echo "eval \`/usr/bin/resize\`" >> /root/.bashrc
 
 	## Enable network

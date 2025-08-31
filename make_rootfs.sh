@@ -185,7 +185,6 @@ function rootfs_qcow2_ubuntu()
 			--root-password password:root				\
 			--run-command "growpart /dev/sda 1"			\
 			--run-command "resize2fs /dev/sda1"			\
-			--run-command "apt update"				\
 			--upload $DEFAULT_SETTING:/root/$DEFAULT_SETTING	\
 			--run-command "chmod +x /root/$DEFAULT_SETTING"		\
 			--run-command "/root/$DEFAULT_SETTING"			\

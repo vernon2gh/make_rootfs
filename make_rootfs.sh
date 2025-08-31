@@ -153,7 +153,7 @@ function rootfs_qcow2_common()
 	fi
 
 	color_echo "Generate initramfs image"
-	KV=$(find $OVERLAY/lib/modules -maxdepth 1 -mindepth 1 -type d -printf '%f\n')
+	KV=$(find $OVERLAY/lib/modules -maxdepth 1 -mindepth 1 -type d -printf '%f\n' 2> /dev/null)
 	if [ ! -z "$KV" ]; then
 		sudo dracut -f -k $OVERLAY/lib/modules/$KV out/$GUEST-initramfs.img $KV
 		rm -fr $OVERLAY/lib/modules/$KV

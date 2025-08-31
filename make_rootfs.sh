@@ -212,6 +212,13 @@ function rootfs_qcow2()
 		rm -fr $OVERLAY.tar.gz
 	fi
 
+	color_echo "Generate initramfs image"
+	KV=$(find $OVERLAY/lib/modules -maxdepth 1 -mindepth 1 -type d -printf '%f\n')
+	if [ ! -z "$KV" ]; then
+		sudo dracut -f -k $OVERLAY/lib/modules/$KV out/initramfs.img $KV
+		rm -fr $OVERLAY/lib/modules/$KV
+	fi
+
 	ln -sf `pwd`/$ROOTFS_TARGET_TYPE $ROOTFS
 }
 
